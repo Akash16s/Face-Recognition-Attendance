@@ -1,4 +1,4 @@
 /dataset
 /__pycache__
 /venv
-*.pickle
+encodings.pickle

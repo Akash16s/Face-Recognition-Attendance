@@ -8,15 +8,16 @@ from multiprocessing.pool import ThreadPool
 
 pool1 = ThreadPool(processes = 1)
 pool2 = ThreadPool(processes = 2)
+pool3 = ThreadPool(processes = 3)
 
 def recogFace(rgb):
-	matches = face_recognition.compare_faces(data["encodings"], encoding)
-	return matches
+	return face_recognition.compare_faces(data["encodings"], encoding)
+
+def recogEncodings(rgb,boxes):
+	return face_recognition.face_encodings(rgb, boxes)
 
 def recogLoc(rgb):
-	boxes = face_recognition.face_locations(rgb, model = "hog")
-	encodings = face_recognition.face_encodings(rgb, boxes)
-	return encodings,boxes
+	return face_recognition.face_locations(rgb, model = "hog")
 
 
 # Load the known face and encodings
@@ -36,18 +37,16 @@ while 1:
 	rgb = imutils.resize(img, width = 750)
 	r = img.shape[1]/float(rgb.shape[1])
 
-
 	#detect boxes
-	result1 = pool1.apply_async(recogLoc,(rgb,))
-	encodings,boxes = result1.get()
+	boxes = pool1.apply_async(recogLoc,(rgb,)).get()
+	encodings = pool3.apply_async(recogEncodings,(rgb,boxes,)).get()
 	names = []
 	
 	# loop over the facial encodings
 	for encoding in encodings :
 		# attempt to match each face then initialise a dicationary
 		#matches = face_recognition.compare_faces(data["encodings"], encoding)
-		result = pool2.apply_async(recogFace,(rgb,))
-		matches = result.get()
+		matches = pool2.apply_async(recogFace,(rgb,)).get()
 		name = "Unkown"
 
 		# check to see if we have found a match

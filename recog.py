@@ -28,8 +28,15 @@ data = pickle.loads(open("encodings.pickle","rb").read())
 cap = cv2.VideoCapture(0)
 time.sleep(2.0)
 
+encodings = []
+boxes = []
+frame = 0
 #start the videocapture
 while 1:
+	frame +=1
+	if(frame==100):
+		frame = 0
+
 	ret, img = cap.read()
 	#Convert the BGR to RGB
 	# a width of 750px (to speed up processing)
@@ -38,8 +45,9 @@ while 1:
 	r = img.shape[1]/float(rgb.shape[1])
 
 	#detect boxes
-	boxes = pool1.apply_async(recogLoc,(rgb,)).get()
-	encodings = pool3.apply_async(recogEncodings,(rgb,boxes,)).get()
+	if(frame%5 == 0):
+		boxes = pool1.apply_async(recogLoc,(rgb,)).get()
+		encodings = pool3.apply_async(recogEncodings,(rgb,boxes,)).get()
 	names = []
 	
 	# loop over the facial encodings

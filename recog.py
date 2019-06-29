@@ -3,6 +3,7 @@ import cv2
 import pickle
 import imutils
 import os
+import datetime
 import time
 from multiprocessing.pool import ThreadPool
 
@@ -74,7 +75,8 @@ while 1:
 			# of votes (note: in the event of an unlikely tie Python will select first entry in the dictionary)
 			name = max(counts , key = counts.get)
 			if(name not in Attendees_Names):
-				Attendees_Names[name]="Present"
+				dataOfPresence = {"Present":str(datetime.datetime.now())}
+				Attendees_Names[name]=dataOfPresence
 
 		names.append(name)
 

@@ -10,7 +10,7 @@ pool1 = ThreadPool(processes = 1)
 pool2 = ThreadPool(processes = 2)
 pool3 = ThreadPool(processes = 3)
 
-def recogFace(rgb):
+def recogFace(data,encoding):
 	return face_recognition.compare_faces(data["encodings"], encoding)
 
 def recogEncodings(rgb,boxes):
@@ -30,6 +30,7 @@ time.sleep(2.0)
 
 encodings = []
 boxes = []
+Attendees_Names = {}
 frame = 0
 #start the videocapture
 while 1:
@@ -54,7 +55,7 @@ while 1:
 	for encoding in encodings :
 		# attempt to match each face then initialise a dicationary
 		#matches = face_recognition.compare_faces(data["encodings"], encoding)
-		matches = pool2.apply_async(recogFace,(rgb,)).get()
+		matches = pool2.apply_async(recogFace,(data,encoding,)).get()
 		name = "Unkown"
 
 		# check to see if we have found a match
@@ -72,8 +73,11 @@ while 1:
 			#determine the recognized faces with largest number
 			# of votes (note: in the event of an unlikely tie Python will select first entry in the dictionary)
 			name = max(counts , key = counts.get)
+			if(name not in Attendees_Names):
+				Attendees_Names[name]="Present"
 
 		names.append(name)
+
 
 	# loop over recognized faces
 	for ((top,right,bottom,left),name)in zip(boxes, names):
@@ -94,4 +98,5 @@ while 1:
 	if key == ord("q"):
 		break
 
+print(Attendees_Names)
 cv2.destroyAllWindows()

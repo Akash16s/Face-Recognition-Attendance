@@ -2,8 +2,8 @@ import face_recognition
 import cv2
 import pickle
 import imutils
-import os
-import datetime
+from os import path
+from datetime import datetime
 import time
 from multiprocessing.pool import ThreadPool
 from SceneChangeDetect import sceneChangeDetect
@@ -12,20 +12,28 @@ import argparse
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--input",required = True, help = "path to input video")
 ap.add_argument("-e", "--encoding", help = "Path to the encodings.pickle file",default = "encodings.pickle")
+ap.add_argument("-f", "--frame", help = "Frame Rate of the video", default = 60, type = int)
 args = vars(ap.parse_args())
 
 pool1 = ThreadPool(processes = 1)
 pool2 = ThreadPool(processes = 2)
 pool3 = ThreadPool(processes = 3)
 
+# It returns the matchedIds of the face in the frame using known encodings
 def recogFace(data,encoding):
 	return face_recognition.compare_faces(data["encodings"], encoding)
 
+# It returns the encodings values of the face in the frame 
 def recogEncodings(rgb,boxes):
 	return face_recognition.face_encodings(rgb, boxes)
 
+# It returns the boxes of the face locations in the frame
 def recogLoc(rgb):
 	return face_recognition.face_locations(rgb, model = "hog")
+
+# It returns the seconds of the Person found in the video
+def getTimeOfEntry(timeOfVideo,frameNo):
+	return timeOfVideo + int(frameNo/args["frame"])
 
 if __name__ == "__main__":
 	# Load the known face and encodings
@@ -34,37 +42,45 @@ if __name__ == "__main__":
 
 	#inititlise the camera
 	print("[INFO] processing video...")
+	# It have the utc sec of the video Creation timestamp
+	videoCreationTime = path.getctime(args["input"]) + int(19800)
+	print(datetime.utcfromtimestamp(videoCreationTime).strftime('%Y-%m-%d %H:%M:%S'))
+	
 	cap = cv2.VideoCapture(args["input"])
 	time.sleep(1.0)
 
+	# For calculating the time of the execution
 	start_time = time.time()
 
-	encodings = []
+	
 	Attendees_Names = {}
-	frame = 0
-	Scene = sceneChangeDetect()
+	Unkown_attendees ={}
+	frame = 0 # to count frame
+	Scene = sceneChangeDetect() 
 
 	while 1:
+		encodings = [] # Strores the encodings and initialised with zero everytime
 		frame +=1
-		print(frame)
 		
-		(grabbed, img) = cap.read(5)
+		(grabbed, img) = cap.read()
 
 		if not grabbed:
+			print("Error video not playable")
 			break
 
-		if(Scene.detectChange(img) == True):
+		if(Scene.detectChange(img) == True):  # To detect some change in the frames
 			#Convert the BGR to RGB
 			# a width of 750px (to speed up processing)
 			rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 			rgb = imutils.resize(img, width = 750)
 
-			boxes = []
+			boxes = [] 
 			#detect boxes
-			if(frame%10==0):
+			if(frame%10==0):  # Process on every nth frame
 				boxes = pool1.apply_async(recogLoc,(rgb,)).get()
-				if(boxes!=[]):
+				if(boxes!=[]):   #If person location found then process
 					encodings = pool3.apply_async(recogEncodings,(rgb,boxes,)).get()
+			
 			# loop over the facial encodings
 			for encoding in encodings :
 				# attempt to match each face then initialise a dicationary
@@ -87,12 +103,22 @@ if __name__ == "__main__":
 					#determine the recognized faces with largest number
 					# of votes (note: in the event of an unlikely tie Python will select first entry in the dictionary)
 					name = max(counts , key = counts.get)
-					if(name not in Attendees_Names):
-						dataOfPresence = {"Present":str(datetime.datetime.now())}
-						Attendees_Names[name]=dataOfPresence
+					if(name=="Unkown"):
+						dataOfPresence = getTimeOfEntry(videoCreationTime, frame)
+						dateAndTime={}
+						dateAndTime[str(datetime.utcfromtimestamp(dataOfPresence).strftime("%Y-%m-%d"))] = datetime.utcfromtimestamp(dataOfPresence).strftime('%H:%M:%S')
+						UnkownName = "Unkown"+str(frameNo)
+						Unkown_attendees[UnkownName] = dateAndTime
+
+					elif(name not in Attendees_Names):
+						dataOfPresence = getTimeOfEntry(videoCreationTime, frame)
+						dateAndTime={}
+						dateAndTime[str(datetime.utcfromtimestamp(dataOfPresence).strftime("%Y-%m-%d"))] = datetime.utcfromtimestamp(dataOfPresence).strftime('%H:%M:%S')
+						Attendees_Names[name]=dateAndTime
 
 	cap.release()
-	print(Attendees_Names)
-	print("--- %s seconds ---" % (time.time() - start_time))
+	print("Known Attendees_Names :"+ str(Attendees_Names))
+	print("Unkown Attendees_Names :" + str(Unkown_attendees))
+	print("Execution Time :--- %s seconds ---" % (time.time() - start_time))
 
 

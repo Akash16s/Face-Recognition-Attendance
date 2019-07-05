@@ -30,4 +30,4 @@ Using face recognition api, self implemented algo in SceneChangeDetect.py and Mu
  ``` (venv)$ python encode.py```
  
  ### Now we can perform the Attendance 
- ``` (vnev)$ python process.py -i "Location of input Video" -d "Input the date and time %Y-%m-%d %H:%M:%S"```
+ ``` (vnev)$ python attendance.py -i "Location of input Video" -d "Input the date and time %Y-%m-%d %H:%M:%S"```

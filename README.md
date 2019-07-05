@@ -1,12 +1,13 @@
-# Face-Recognition and attendence
+# Face-Recognition and Attendance
 Learned and implemented the Face recognition using face_recognition api
 
-# Attendence
-Using face recognition api, self implemented algo in SceneChangeDetect.py and Multithreading pool developed a system in which one can pass argument as past cctv footage and can do facial_recognition(attendence).
+# Attendance
+Using face recognition api, self implemented algo in SceneChangeDetect.py and Multithreading pool developed a system in which one can pass argument as past cctv footage and can do facial_recognition(attendance).
 
 # Processing Speed: 
 50sec(changes rapid) -> 10 sec processing and largely depends upon the visual it is getting as it skips most of the part of frame in which no change occured and also no face detected.
-# Using Attendence system
+
+# Using Attendance system
 1. Clone the repository into a python virtual environment with installed packages : 
        * face_recognition
        * dlib
@@ -15,7 +16,7 @@ Using face recognition api, self implemented algo in SceneChangeDetect.py and Mu
        * opencv-python
        * pickle
  ### clone : 
- ```$ git clone https://github.com/Akash16s/Face-Recognition-Attendence.git```
+ ```$ git clone https://github.com/Akash16s/Face-Recognition-Attendance.git```
  
  ### Structure of files :
  ```--BASE_DIR 
@@ -28,5 +29,5 @@ Using face recognition api, self implemented algo in SceneChangeDetect.py and Mu
  ### Now first create encodings.pickle file have encodings of faces 
  ``` (venv)$ python encode.py```
  
- ### Now we can perform the Attendence 
+ ### Now we can perform the Attendance 
  ``` (vnev)$ python process.py -i "Location of input Video" -d "Input the date and time %Y-%m-%d %H:%M:%S"```

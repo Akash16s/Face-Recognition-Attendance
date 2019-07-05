@@ -15,4 +15,7 @@ Using face recognition api, self implemented algo in SceneChangeDetect.py and Mu
        * opencv-python
        * pickle
  clone
- '''$ git clone https://github.com/Akash16s/Face-Recognition-Attendence.git'''
+ ```
+ $ git clone https://github.com/Akash16s/Face-Recognition-Attendence.git ```
+ 
+ 

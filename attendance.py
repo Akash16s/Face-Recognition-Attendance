@@ -12,7 +12,7 @@ import argparse
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--input",required = True, help = "path to input video")
 ap.add_argument("-e", "--encoding", help = "Path to the encodings.pickle file",default = "encodings.pickle")
-ap.add_argument("-f", "--frame", help = "Frame Rate of the video", default = 60, type = int)
+ap.add_argument("-f", "--frame", help = "Frame Rate of the video", default = 30, type = int)
 ap.add_argument("-d", "--date", help="Input the date and time %Y-%m-%d %H:%M:%S", type=str, required=True)
 args = vars(ap.parse_args())
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 	# It have the utc sec of the video Creation timestamp
 	dt = datetime.strptime(args["date"], '%Y-%m-%d %H:%M:%S') 
 	videoCreationTime = time.mktime(dt.timetuple()) + int(19800)
-	
+	# printing the start time of the video in CCTV session
 	print(datetime.utcfromtimestamp(videoCreationTime).strftime('%Y-%m-%d %H:%M:%S'))
 	
 	cap = cv2.VideoCapture(args["input"])
@@ -68,7 +68,6 @@ if __name__ == "__main__":
 		(grabbed, img) = cap.read()
 
 		if not grabbed:
-			print("Error video not playable")
 			break
 
 		if(Scene.detectChange(img) == True):  # To detect some change in the frames
@@ -123,4 +122,5 @@ if __name__ == "__main__":
 	print("Known Attendees_Names :"+ str(Attendees_Names))
 	print("Unkown Attendees_Names :" + str(Unkown_attendees))
 	print("Execution Time :--- %s seconds ---" % (time.time() - start_time))
+
 

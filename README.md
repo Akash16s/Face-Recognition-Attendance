@@ -26,8 +26,8 @@ Using face recognition api, self implemented algo in SceneChangeDetect.py and Mu
      -input CCTV video
   ```
   
- ### Now first create encodings.pickle file have encodings of faces 
+ ### Now first create encodings.pickle file having encodings of faces 
  ``` (venv)$ python encode.py```
  
- ### Now we can perform the Attendance 
+ ### Now we can perform the Attendance part
  ``` (vnev)$ python attendance.py -i "Location of input Video" -d "Input the date and time %Y-%m-%d %H:%M:%S"```

@@ -1,5 +1,5 @@
 # Face-Recognition and Attendance
-Learned and implemented the Face recognition using face_recognition api
+Learned and implemented the Face detection and recognition using face_recognition api
 
 # Attendance
 Using face recognition api, self implemented algo in SceneChangeDetect.py and Multithreading pool developed a system in which one can pass argument as past cctv footage and can do facial_recognition(attendance).
